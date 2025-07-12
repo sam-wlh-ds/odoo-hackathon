@@ -35,7 +35,7 @@ const UserCard = ({ user, currentUser, onSwapRequest }) => {
         </div>
       </div>
       <div className="flex space-x-2">
-        <Button onClick={handleViewProfile} variant="outline">View Profile</Button>
+        <Button onClick={handleViewProfile} variant="default">View Profile</Button>
         {currentUser && currentUser._id !== user._id && (
           <Button onClick={() => onSwapRequest(user)}>Request Swap</Button>
         )}

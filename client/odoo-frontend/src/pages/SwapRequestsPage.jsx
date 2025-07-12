@@ -92,7 +92,7 @@ const SwapRequestsPage = () => {
             </>
           )}
           {canDelete && (
-            <Button variant="outline" onClick={() => handleDeleteRequest(req.swapId)}>Delete</Button>
+            <Button variant="default" onClick={() => handleDeleteRequest(req.swapId)}>Delete</Button>
           )}
           {req.status === 'accepted' && (
             <Link to={`/feedback/${req.swapId}`}>
