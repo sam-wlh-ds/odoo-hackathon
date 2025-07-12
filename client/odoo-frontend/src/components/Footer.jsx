@@ -9,9 +9,9 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-accent rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-bold text-sm">SS</span>
+                <span className="text-accent-foreground font-bold text-sm">DS</span>
               </div>
-              <span className="text-xl font-bold">SkillSwap</span>
+              <span className="text-xl font-bold">DnyanSetu</span>
             </div>
             <p className="text-primary-foreground/70">
               Connecting professionals to exchange skills and grow together.
@@ -64,7 +64,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-8 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>&copy; 2024 SkillSwap. All rights reserved.</p>
+          <p>&copy; 2024 DnyanSetu. All rights reserved.</p>
         </div>
       </div>
     </footer>

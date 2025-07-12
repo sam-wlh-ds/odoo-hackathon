@@ -6,7 +6,7 @@ import { MapPin, Clock, Star, ArrowRight } from "lucide-react";
 
 export function SkillCard({ user }) {
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border rounded-lg p-4">
+    <Card className="group hover:shadow-xl transition-all duration-400 hover:-translate-y-3 border rounded-lg p-4 bg-[#14213d] text-white">
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
           <Avatar className="w-12 h-12 rounded-full">
@@ -52,7 +52,7 @@ export function SkillCard({ user }) {
           <h4 className="text-sm font-medium mb-1 text-primary">Looking For</h4>
           <div className="flex flex-wrap gap-2">
             {user.skillsWanted.slice(0, 3).map((skill) => (
-              <Badge key={skill} variant="secondary" className="text-xs bg-[#fca311] text-white ">
+              <Badge key={skill} variant="highlight" className="text-xs bg-[#fca311] text-white ">
                 {skill}
               </Badge>
             ))}
@@ -71,8 +71,8 @@ export function SkillCard({ user }) {
           </div>
           <Button
             size="sm"
-            variant="hero"
-            className="flex items-center gap-1 bg-[#fca311] text-white hover:bg-yellow-500 px-3 py-1 rounded"
+            variant="destructive"
+            className="flex items-center gap-1 bg-[#14213d] text-white hover:bg-[#fca311] px-3 py-1 rounded"
           >
             View Profile
             <ArrowRight className="w-4 h-4" />

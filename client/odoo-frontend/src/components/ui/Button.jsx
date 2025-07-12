@@ -15,7 +15,7 @@ const Button = ({ children, onClick, className = '', variant = 'default', ...pro
       variantStyle = 'bg-gray-200 text-gray-800 hover:bg-gray-300';
       break;
     case 'destructive':
-      variantStyle = 'bg-red-600 text-white hover:bg-red-700';
+      variantStyle = 'bg-[#14213d] text-white hover:bg-[#fca311]';
       break;
     case 'ghost':
       variantStyle = 'bg-transparent text-gray-700 hover:bg-gray-100';

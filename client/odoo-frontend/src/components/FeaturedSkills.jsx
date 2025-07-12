@@ -1,10 +1,12 @@
 import { SkillCard } from "./SkillCard";
+import { Button } from "./ui/Button";
+import { useNavigate } from "react-router-dom";
 
 const mockUsers = [
   {
     id: "1",
     name: "Sarah Chen",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face",
     location: "San Francisco, CA",
     rating: 4.9,
     skillsOffered: ["React", "JavaScript", "UI/UX Design", "Figma"],
@@ -64,6 +66,7 @@ const mockUsers = [
 ];
 
 export function FeaturedSkills() {
+    const navigate = useNavigate();
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -83,9 +86,9 @@ export function FeaturedSkills() {
         </div>
 
         <div className="text-center mt-12">
-          <button className="text-accent font-semibold hover:text-accent/80 transition-colors">
+          <Button className="text-accent font-semibold hover:text-accent/80 transition-colors" onClick={()=>{navigate('/register')}}>
             View All Skill Swappers →
-          </button>
+          </Button>
         </div>
       </div>
     </section>

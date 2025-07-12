@@ -9,6 +9,6 @@
    jason.dsouza.here@gmail.com
 
 # Topic 
-Skill Swap Platform
+DnyanSetu
 https://github.com/sam-wlh-ds/odoo-hackathon
    
