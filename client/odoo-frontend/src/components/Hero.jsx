@@ -1,9 +1,11 @@
 import { Button } from "../components/ui/Button";
 import { ArrowRight, Users, BookOpen, Handshake } from "lucide-react";
 import HeroImage from "../assets/HeroImage.png";
+import { useNavigate } from "react-router-dom";
 
 
 export function Hero() {
+    const navigate=useNavigate();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -36,13 +38,13 @@ export function Hero() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <Button size="lg" variant="default" className="text-lg px-10 py-4 ">
+            <Button size="lg" variant="default" className="text-lg px-10 py-4 " onClick={()=>{navigate('/register')}}>
               <span className="flex items-center gap-2">
                 Start Swapping Skills
                 <ArrowRight className="w-5 h-5" />
               </span>
             </Button>
-            <Button size="lg" variant="default" className="text-lg px-8 py-4 bg-white/10 text-white border-white/20 hover:bg-white/20">
+            <Button onClick={()=>{navigate('/browse')}} size="lg" variant="default" className="text-lg px-8 py-4 bg-white/10 text-white border-white/20 hover:bg-white/20">
               Browse Skills
             </Button>
           </div>
