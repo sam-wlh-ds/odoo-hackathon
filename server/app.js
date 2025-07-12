@@ -11,6 +11,7 @@ import { connectToDB, checkDBConnection } from './db/dbConnect.js';
 import loginRouter from './routes/login.js';
 import registerRouter from './routes/register.js';
 import getUserDataRouter from './routes/getuserdata.js';
+import searchUsersRouter from './routes/searchUsers.js';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -61,6 +62,7 @@ app.all('*splash', (req,res,next)=>{
 app.use('/login', checkDBConnection, loginRouter);
 app.use('/register', checkDBConnection, registerRouter);
 app.use('/user', checkDBConnection, JWT.verifyJwtToken, getUserDataRouter);
+app.use('/browse', checkDBConnection, searchUsersRouter);
 app.get('/protected', JWT.verifyJwtToken, (req,res)=>res.status(200).json({message:"Authorized"}));
 
 // handle errors

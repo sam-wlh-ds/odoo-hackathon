@@ -31,5 +31,43 @@ async function getUserWithSkills(username) {
   }
 }
 
+async function searchUsers({ skill, location, availability = [] }) {
+  try {
+    let skillIds = [];
+    if (skill) {
+      const skillRegex = new RegExp(skill, 'i');
+      const matchedSkills = await SkillModel.find({ name: skillRegex }, '_id');
+      skillIds = matchedSkills.map(s => s._id);
+    }
 
-export {getUserById, getUserWithSkills};
+    const query = {};
+
+    if (location) {
+      query.location = location;
+    }
+
+    if (availability.length > 0) {
+      query.availability = { $all: availability };
+    }
+
+    if (skillIds.length > 0) {
+      query.$or = [
+        { skillsOffered: { $in: skillIds } },
+        { skillsWanted: { $in: skillIds } }
+      ];
+    }
+
+    const users = await UserModel.find(query)
+      .populate('skillsOffered')
+      .populate('skillsWanted')
+      .select('-password')
+      .lean();
+
+    return { success: true, users };
+  } catch (err) {
+    console.error('searchUsers error:', err);
+    return { success: false, message: 'Failed to search users' };
+  }
+}
+
+export {getUserById, getUserWithSkills, searchUsers};

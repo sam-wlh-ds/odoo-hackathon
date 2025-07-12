@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../components/AuthContext';
-import { mockApi } from '../api/mockApi';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../components/ui/Select';
-import { Checkbox } from '../components/ui/Checkbox';
 import UserCard from '../components/UserCard';
+import { sendRequest } from '../helper/requestController.js';
 
 const BrowseSearchPage = () => {
-  const { currentUser } = useAuth();
+  const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,41 +21,70 @@ const BrowseSearchPage = () => {
   const [swapMessage, setSwapMessage] = useState('');
   const [swapError, setSwapError] = useState('');
 
-  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-  const fetchUsers = async (filters = {}) => {
-    setLoading(true);
-    const fetchedUsers = await mockApi.getUsers(filters);
-    setUsers(fetchedUsers);
-    setLoading(false);
-  };
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   useEffect(() => {
-    fetchUsers();
+    // Fetch logged-in user (assumes /api/user returns full user with populated skills)
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/user');
+        const data = await res.json();
+        if (data.success) setCurrentUser(data.user);
+      } catch (err) {
+        console.error('User fetch error', err);
+      }
+    };
+
+    fetchUser();
+    fetchUsers(); // initial load
   }, []);
+
+ const fetchUsers = async (filters = {}) => {
+  setLoading(true);
+  try {
+    const query = new URLSearchParams();
+    if (filters.skill) query.append('skill', filters.skill);
+    if (filters.location) query.append('location', filters.location);
+    if (filters.availability?.length > 0) {
+      filters.availability.forEach(day => query.append('availability', day));
+    }
+
+    const result = await sendRequest({}, `browse?${query.toString()}`);
+    if (result && result.success) {
+      setUsers(result.users || []);
+    } else {
+      setUsers([]);
+    }
+  } catch (err) {
+    console.error('Fetch users failed:', err);
+    setUsers([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSearch = () => {
     fetchUsers({
       skill: searchTerm,
-      availability: filterAvailability,
       location: filterLocation,
+      availability: filterAvailability,
     });
   };
 
   const handleAvailabilityChange = (day) => {
-    setFilterAvailability(prev =>
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    setFilterAvailability((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
   };
 
   const handleRequestSwap = (user) => {
     if (!currentUser) {
-      alert('Please log in to send a swap request.'); // Using alert for simplicity, replace with custom modal
+      alert('Please log in to send a swap request.');
       return;
     }
     setSelectedUserForSwap(user);
-    setOfferedSkill(currentUser.skillsOffered && currentUser.skillsOffered.length > 0 ? currentUser.skillsOffered[0].name : '');
-    setRequestedSkill(user.skillsWanted && user.skillsWanted.length > 0 ? user.skillsWanted[0].name : '');
+    setOfferedSkill(currentUser.skillsOffered?.[0]?.name || '');
+    setRequestedSkill(user.skillsWanted?.[0]?.name || '');
     setSwapMessage('');
     setSwapError('');
     setIsModalOpen(true);
@@ -74,21 +101,17 @@ const BrowseSearchPage = () => {
     }
 
     try {
-      const result = await mockApi.createSwapRequest({
-        fromUserId: currentUser._id,
-        toUserId: selectedUserForSwap._id,
-        offeredSkill: offeredSkill,
-        requestedSkill: requestedSkill,
+      // TODO: Replace with your real POST endpoint
+      console.log('Submitting swap request', {
+        fromUser: currentUser._id,
+        toUser: selectedUserForSwap._id,
+        offeredSkill,
+        requestedSkill,
       });
-      if (result.success) {
-        setSwapMessage('Swap request sent successfully!');
-        setIsModalOpen(false);
-      } else {
-        setSwapError(result.message);
-      }
-    } catch (error) {
+      setSwapMessage('Swap request sent!');
+      setIsModalOpen(false);
+    } catch (err) {
       setSwapError('Failed to send swap request.');
-      console.error('Swap request error:', error);
     }
   };
 
@@ -109,141 +132,112 @@ const BrowseSearchPage = () => {
             />
           </div>
           <div>
-            <Label htmlFor="searchLocation" className="text-white">Filter by Location (Optional)</Label>
+            <Label htmlFor="searchLocation" className="text-white">Filter by Location</Label>
             <Input
               id="searchLocation"
-              placeholder="e.g., London"
+              placeholder="e.g., Delhi"
               className="placeholder-white text-white"
               value={filterLocation}
               onChange={(e) => setFilterLocation(e.target.value)}
             />
           </div>
           <div>
-            <Label className="text-white">Filter by Availability</Label>
+            <Label className="text-white">Availability</Label>
             <div className="grid grid-cols-2 gap-2 mt-2">
-                  {daysOfWeek.map((day) => (
-                    <label
-                      key={day}
-                      htmlFor={`avail-${day}`}
-                      className="flex items-center gap-2 text-white cursor-pointer"
-                    >
-                      <input
-                        id={`avail-${day}`}
-                        type="checkbox"
-                        checked={filterAvailability.includes(day)}
-                        onChange={() => handleAvailabilityChange(day)}
-                        className="peer hidden"
-                      />
-                      <div className="h-5 w-5 flex items-center justify-center rounded-md border border-[#a2a1a833] bg-[#212121] peer-checked:bg-[#fca311] transition">
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          className="w-4 h-4 stroke-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M4 12.6111L8.92308 17.5L20 6.5"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                      <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-                    </label>
-                  ))}
-                </div>
-
+              {daysOfWeek.map((day) => (
+                <label key={day} className="flex items-center gap-2 text-white cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filterAvailability.includes(day)}
+                    onChange={() => handleAvailabilityChange(day)}
+                    className="peer hidden"
+                  />
+                  <div className="h-5 w-5 flex items-center justify-center rounded-md border border-white bg-[#212121] peer-checked:bg-[#fca311] transition">
+                    <svg className="w-4 h-4 stroke-white" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 12.6111L8.92308 17.5L20 6.5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <span>{day}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex space-x-4">
-          <Button onClick={handleSearch} className="">Search Users</Button>
-          <Button onClick={() => {
-            setSearchTerm('');
-            setFilterLocation('');
-            setFilterAvailability([]);
-          }}>
+          <Button onClick={handleSearch}>Search Users</Button>
+          <Button
+            onClick={() => {
+              setSearchTerm('');
+              setFilterLocation('');
+              setFilterAvailability([]);
+            }}
+          >
             Reset
           </Button>
         </div>
-
-
       </div>
 
       {loading ? (
-        <p className="text-center text-lg">Loading users...</p>
+        <p className="text-center text-lg text-white">Loading users...</p>
       ) : users.length === 0 ? (
-        <p className="text-center text-lg text-gray-600">No users found matching your criteria.</p>
+        <p className="text-center text-lg text-gray-300">No users found matching your criteria.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {users.map(user => (
-            <UserCard key={user._id} user={user} currentUser={currentUser} onSwapRequest={handleRequestSwap} />
+          {users.map((user) => (
+            <UserCard
+              key={user._id}
+              user={user}
+              currentUser={currentUser}
+              onSwapRequest={handleRequestSwap}
+            />
           ))}
         </div>
       )}
 
-      {/* Request Swap Modal */}
+      {/* Swap Request Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogHeader>
           <DialogTitle>Request Swap with {selectedUserForSwap?.name}</DialogTitle>
-          <DialogDescription>
-            Choose which skill you want to offer and which skill you want from them.
-          </DialogDescription>
+          <DialogDescription>Choose the skills for this swap</DialogDescription>
         </DialogHeader>
         <DialogContent>
           {swapError && <p className="text-red-500 text-sm">{swapError}</p>}
           {swapMessage && <p className="text-green-600 text-sm">{swapMessage}</p>}
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="offeredSkill" className="text-right">
-                Your Skill
-              </Label>
-              <Select
-                id="offeredSkill"
-                value={offeredSkill}
-                onValueChange={setOfferedSkill}
-                className="col-span-3"
-              >
-                <SelectTrigger>
-                  <SelectContent>
-                    {currentUser?.skillsOffered && currentUser.skillsOffered.length > 0 ? (
-                      currentUser.skillsOffered.map(skill => (
-                        <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="" disabled>No skills offered</SelectItem>
-                    )}
-                  </SelectContent>
-                </SelectTrigger>
+              <Label className="text-right">Your Skill</Label>
+              <Select value={offeredSkill} onValueChange={setOfferedSkill}>
+                <SelectTrigger className="col-span-3" />
+                <SelectContent>
+                  {currentUser?.skillsOffered?.length > 0 ? (
+                    currentUser.skillsOffered.map((skill) => (
+                      <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem disabled>No skills</SelectItem>
+                  )}
+                </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="requestedSkill" className="text-right">
-                Their Skill
-              </Label>
-              <Select
-                id="requestedSkill"
-                value={requestedSkill}
-                onValueChange={setRequestedSkill}
-                className="col-span-3"
-              >
-                <SelectTrigger>
-                  <SelectContent>
-                    {selectedUserForSwap?.skillsWanted && selectedUserForSwap.skillsWanted.length > 0 ? (
-                      selectedUserForSwap.skillsWanted.map(skill => (
-                        <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="" disabled>No skills wanted</SelectItem>
-                    )}
-                  </SelectContent>
-                </SelectTrigger>
+              <Label className="text-right">Their Skill</Label>
+              <Select value={requestedSkill} onValueChange={setRequestedSkill}>
+                <SelectTrigger className="col-span-3" />
+                <SelectContent>
+                  {selectedUserForSwap?.skillsWanted?.length > 0 ? (
+                    selectedUserForSwap.skillsWanted.map((skill) => (
+                      <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem disabled>No skills</SelectItem>
+                  )}
+                </SelectContent>
               </Select>
             </div>
           </div>
         </DialogContent>
         <DialogFooter>
-          <Button variant="default" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
           <Button onClick={handleSubmitSwapRequest}>Send Request</Button>
         </DialogFooter>
       </Dialog>
