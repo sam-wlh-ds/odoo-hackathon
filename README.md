@@ -12,3 +12,5 @@
 DnyanSetu
 https://github.com/sam-wlh-ds/odoo-hackathon
    
+#Video
+https://drive.google.com/file/d/1TP4r6J9vcladSvEKO9IkRzq9vP9Tma-h/view?usp=sharing
