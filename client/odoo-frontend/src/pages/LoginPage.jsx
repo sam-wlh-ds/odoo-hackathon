@@ -18,13 +18,9 @@ const LoginPage = () => {
     setError('');
     const result = await login(username, password);
     if (result.success) {
-    console.log("Here");
-    const result = await loginAndGetToken(username, password);
-    if (result === true) {
       navigate('/dashboard');
-    } else {                                                                        
+    } else {
       setError(result.message);
-      console.log("Error:", result.message);
     }
   };
 

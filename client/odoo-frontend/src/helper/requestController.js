@@ -11,19 +11,19 @@ async function loginAndGetToken(username, password) {
       body: new URLSearchParams({ username, password }),
     });
 
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      localStorage.setItem("Authorization", data.token);
-      console.log("Token stored.");
-      return true;
-    } else {
-      console.error("Login failed:", data);
-      return false;
+    try {
+        const data = await res.json();
+        if (res.ok && data.token) {
+            localStorage.setItem("Authorization", data.token);
+            console.log("Token stored.");
+            return {success: 1};
+        } 
+    } catch (error) {
+        return { message: (error.message || "Invalid Details")};
     }
   } catch (err) {
-    console.error("Login request error:", err);
-    return false;
+    console.error("Login request error:", err.message);
+    return {message: err.message};
   }
 }
 
