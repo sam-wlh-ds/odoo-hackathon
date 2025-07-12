@@ -11,13 +11,17 @@ async function loginAndGetToken(username, password) {
       body: new URLSearchParams({ username, password }),
     });
 
+    const data = await res.json();
+    console.log(res);
+
     try {
-        const data = await res.json();
         if (res.ok && data.token) {
             localStorage.setItem("Authorization", data.token);
             console.log("Token stored.");
             return {success: 1};
-        } 
+        } else {
+            return {message: data.message};
+        }
     } catch (error) {
         return { message: (error.message || "Invalid Details")};
     }
