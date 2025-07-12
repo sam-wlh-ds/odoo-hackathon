@@ -19,11 +19,11 @@ async function loginAndGetToken(username, password) {
       return true;
     } else {
       console.error("Login failed:", data);
-      return false;
+      return data;
     }
   } catch (err) {
     console.error("Login request error:", err);
-    return false;
+    return err;
   }
 }
 

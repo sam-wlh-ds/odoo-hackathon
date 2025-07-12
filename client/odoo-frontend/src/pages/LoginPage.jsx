@@ -17,10 +17,11 @@ const LoginPage = () => {
     setError('');
     console.log("Here");
     const result = await loginAndGetToken(username, password);
-    if (result) {
+    if (result === true) {
       navigate('/dashboard');
-    } else {
+    } else {                                                                        
       setError(result.message);
+      console.log("Error:", result.message);
     }
   };
 
