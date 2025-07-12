@@ -1,6 +1,7 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+@import "tailwindcss";
 
 /* You might want to define a custom font in your tailwind.config.js */
 /* For simplicity, we are assuming 'font-inter' is available or will default */
