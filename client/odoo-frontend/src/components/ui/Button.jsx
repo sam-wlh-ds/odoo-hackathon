@@ -6,7 +6,7 @@ const Button = ({ children, onClick, className = '', variant = 'default', ...pro
 
   switch (variant) {
     case 'default':
-      variantStyle = 'bg-blue-600 text-white hover:bg-blue-700';
+      variantStyle = 'bg-[#fca311] text-white hover:bg-[#f59e0b] hover:opacity-90';
       break;
     case 'outline':
       variantStyle = 'border border-gray-300 text-gray-700 hover:bg-gray-100';
