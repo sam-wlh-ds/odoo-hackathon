@@ -30,20 +30,24 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // cors
-const dynamicCorsOptions = function(req, callback) {
-  let corsOptions;
-  if (req.path.startsWith('/auth/connect/')) {
-    corsOptions = {
-      origin: 'http://mydomain.com', // Allow only a specific origin
-      credentials: true,            // Enable cookies and credentials
-    };
-  } else {
-    corsOptions = { origin: '*' };   // Allow all origins for other routes
-  }
-  callback(null, corsOptions);
-};
+// const dynamicCorsOptions = function(req, callback) {
+//   let corsOptions;
+//   if (req.path.startsWith('/')) {
+//     corsOptions = {
+//       origin: 'http://mydomain.com', // Allow only a specific origin
+//       credentials: true,            // Enable cookies and credentials
+//     };
+//   } else {
+//     corsOptions = { origin: '*' };   // Allow all origins for other routes
+//   }
+//   callback(null, corsOptions);
+// };
+// app.use(cors(dynamicCorsOptions));
 
-app.use(cors(dynamicCorsOptions));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 // set initial info
 app.all('*splash', (req,res,next)=>{ 

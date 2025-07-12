@@ -16,11 +16,14 @@ async function loginAndGetToken(username, password) {
     if (res.ok && data.token) {
       localStorage.setItem("Authorization", data.token);
       console.log("Token stored.");
+      return true;
     } else {
       console.error("Login failed:", data);
+      return false;
     }
   } catch (err) {
     console.error("Login request error:", err);
+    return false;
   }
 }
 
