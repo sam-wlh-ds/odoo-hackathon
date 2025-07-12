@@ -18,7 +18,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const data = await sendRequest({}, "user"); // hits /user route
+        const data = await sendRequest({}, "user");
         if (data?.user) {
           setCurrentUser(data.user);
         } else {
@@ -44,7 +44,7 @@ const DashboardPage = () => {
       <p className="p-4 text-center">Please log in to view your dashboard.</p>
     );
   }
-  console.log(currentUser);
+  // console.log(currentUser);
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Welcome, {currentUser.name}!</h1>
