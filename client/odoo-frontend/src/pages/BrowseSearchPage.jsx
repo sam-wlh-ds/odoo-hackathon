@@ -24,7 +24,6 @@ const BrowseSearchPage = () => {
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   useEffect(() => {
-    // Fetch logged-in user (assumes /api/user returns full user with populated skills)
     const fetchUser = async () => {
       try {
         const res = await fetch('/api/user');
@@ -36,7 +35,7 @@ const BrowseSearchPage = () => {
     };
 
     fetchUser();
-    fetchUsers(); // initial load
+    fetchUsers();
   }, []);
 
  const fetchUsers = async (filters = {}) => {

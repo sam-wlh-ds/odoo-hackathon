@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../components/AuthContext';
-import { mockApi } from '../api/mockApi';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/Dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '../components/ui/Select';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogHeader, DialogTitle
+} from '../components/ui/Dialog';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger
+} from '../components/ui/Select';
 import { Label } from '../components/ui/Label';
+import { sendRequest } from '../helper/requestController';
 
 const OtherUserProfilePage = () => {
   const { userId } = useParams();
-  const { currentUser } = useAuth();
+
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,32 +26,44 @@ const OtherUserProfilePage = () => {
   const [swapError, setSwapError] = useState('');
 
   useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      setError('');
-      const fetchedUser = await mockApi.getUser(userId);
-      if (fetchedUser) {
-        if (!fetchedUser.isPublic && currentUser?._id !== fetchedUser._id) {
-          setError('This profile is private.');
-          setUser(null);
-        } else {
-          setUser(fetchedUser);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const currentUserData = await sendRequest({}, 'user');
+        const otherUserData = await sendRequest({}, `user/${userId}`);
+
+        if (!otherUserData || !otherUserData.user) {
+          setError('User not found');
+          return;
         }
-      } else {
-        setError('User not found.');
+
+        if (!otherUserData.user.isPublic && currentUserData?.user?._id !== otherUserData.user._id) {
+          setError('This profile is private.');
+          return;
+        }
+
+        setCurrentUser(currentUserData.user);
+        setUser(otherUserData.user);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch user profile.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-    fetchUser();
-  }, [userId, currentUser]);
+
+    fetchData();
+  }, [userId]);
 
   const handleRequestSwap = () => {
     if (!currentUser) {
       alert('Please log in to send a swap request.');
       return;
     }
-    setOfferedSkill(currentUser.skillsOffered && currentUser.skillsOffered.length > 0 ? currentUser.skillsOffered[0].name : '');
-    setRequestedSkill(user.skillsWanted && user.skillsWanted.length > 0 ? user.skillsWanted[0].name : '');
+
+    setOfferedSkill(currentUser.skillsOffered?.[0]?.name || '');
+    setRequestedSkill(user.skillsWanted?.[0]?.name || '');
     setSwapMessage('');
     setSwapError('');
     setIsModalOpen(true);
@@ -63,27 +80,28 @@ const OtherUserProfilePage = () => {
     }
 
     try {
-      const result = await mockApi.createSwapRequest({
+      const res = await sendRequest({
         fromUserId: currentUser._id,
         toUserId: user._id,
-        offeredSkill: offeredSkill,
-        requestedSkill: requestedSkill,
-      });
-      if (result.success) {
+        offeredSkill,
+        requestedSkill
+      }, 'swap/request');
+
+      if (res?.success) {
         setSwapMessage('Swap request sent successfully!');
         setIsModalOpen(false);
       } else {
-        setSwapError(result.message);
+        setSwapError(res?.message || 'Failed to send request.');
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Swap request error:', err);
       setSwapError('Failed to send swap request.');
-      console.error('Swap request error:', error);
     }
   };
 
   if (loading) return <p className="text-center p-4">Loading user profile...</p>;
   if (error) return <p className="text-center p-4 text-red-500">{error}</p>;
-  if (!user) return <p className="text-center p-4">User data not available.</p>;
+  if (!user) return <p className="text-center p-4">User not found.</p>;
 
   return (
     <div className="w-full min-h-screen p-8 bg-[#14213d]">
@@ -101,14 +119,12 @@ const OtherUserProfilePage = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-3">Skills Offered</h2>
             <div className="flex flex-wrap gap-2">
-              {user.skillsOffered.length > 0 ? (
+              {user.skillsOffered?.length > 0 ? (
                 user.skillsOffered.map(skill => (
-                  <span key={skill._id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg">
-                    {skill.name}
-                  </span>
+                  <span key={skill._id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg">{skill.name}</span>
                 ))
               ) : (
-                <p className="text-gray-500">No skills offered yet.</p>
+                <p className="text-gray-500">No skills offered.</p>
               )}
             </div>
           </div>
@@ -116,14 +132,12 @@ const OtherUserProfilePage = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-3">Skills Wanted</h2>
             <div className="flex flex-wrap gap-2">
-              {user.skillsWanted.length > 0 ? (
+              {user.skillsWanted?.length > 0 ? (
                 user.skillsWanted.map(skill => (
-                  <span key={skill._id} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-lg">
-                    {skill.name}
-                  </span>
+                  <span key={skill._id} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-lg">{skill.name}</span>
                 ))
               ) : (
-                <p className="text-gray-500">No skills wanted yet.</p>
+                <p className="text-gray-500">No skills wanted.</p>
               )}
             </div>
           </div>
@@ -131,14 +145,14 @@ const OtherUserProfilePage = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-3">Availability</h2>
             <div className="flex flex-wrap gap-2">
-              {user.availability.length > 0 ? (
+              {user.availability?.length > 0 ? (
                 user.availability.map(day => (
                   <span key={day} className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">
                     {day.charAt(0).toUpperCase() + day.slice(1)}
                   </span>
                 ))
               ) : (
-                <p className="text-gray-500">Availability not specified.</p>
+                <p className="text-gray-500">No availability set.</p>
               )}
             </div>
           </div>
@@ -151,59 +165,43 @@ const OtherUserProfilePage = () => {
         )}
       </Card>
 
-      {/* Request Swap Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogHeader>
           <DialogTitle>Request Swap with {user?.name}</DialogTitle>
-          <DialogDescription>
-            Choose which skill you want to offer and which skill you want from them.
-          </DialogDescription>
+          <DialogDescription>Select a skill to offer and one to request.</DialogDescription>
         </DialogHeader>
         <DialogContent>
           {swapError && <p className="text-red-500 text-sm">{swapError}</p>}
           {swapMessage && <p className="text-green-600 text-sm">{swapMessage}</p>}
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="offeredSkill" className="text-right">
-                Your Skill
-              </Label>
-              <Select
-                id="offeredSkill"
-                value={offeredSkill}
-                onValueChange={setOfferedSkill}
-                className="col-span-3"
-              >
+              <Label htmlFor="offeredSkill" className="text-right">Your Skill</Label>
+              <Select id="offeredSkill" value={offeredSkill} onValueChange={setOfferedSkill} className="col-span-3">
                 <SelectTrigger>
                   <SelectContent>
-                    {currentUser?.skillsOffered && currentUser.skillsOffered.length > 0 ? (
+                    {currentUser?.skillsOffered?.length > 0 ? (
                       currentUser.skillsOffered.map(skill => (
                         <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>No skills offered</SelectItem>
+                      <SelectItem value="" disabled>No skills</SelectItem>
                     )}
                   </SelectContent>
                 </SelectTrigger>
               </Select>
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="requestedSkill" className="text-right">
-                Their Skill
-              </Label>
-              <Select
-                id="requestedSkill"
-                value={requestedSkill}
-                onValueChange={setRequestedSkill}
-                className="col-span-3"
-              >
+              <Label htmlFor="requestedSkill" className="text-right">Their Skill</Label>
+              <Select id="requestedSkill" value={requestedSkill} onValueChange={setRequestedSkill} className="col-span-3">
                 <SelectTrigger>
                   <SelectContent>
-                    {user?.skillsWanted && user.skillsWanted.length > 0 ? (
+                    {user?.skillsWanted?.length > 0 ? (
                       user.skillsWanted.map(skill => (
                         <SelectItem key={skill._id} value={skill.name}>{skill.name}</SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>No skills wanted</SelectItem>
+                      <SelectItem value="" disabled>No skills</SelectItem>
                     )}
                   </SelectContent>
                 </SelectTrigger>

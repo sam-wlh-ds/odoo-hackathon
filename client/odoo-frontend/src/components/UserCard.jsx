@@ -7,7 +7,7 @@ const UserCard = ({ user, currentUser, onSwapRequest }) => {
   const navigate = useNavigate();
 
   const handleViewProfile = () => {
-    navigate(`/user/${user._id}`);
+    navigate(`/user/${user.username}`);
   };
 
   return (
