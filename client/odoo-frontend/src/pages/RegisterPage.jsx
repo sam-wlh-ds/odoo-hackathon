@@ -154,7 +154,7 @@ const RegisterPage = () => {
                 <select
                   value={offeredSkill.category}
                   onChange={(e) => setOfferedSkill({ ...offeredSkill, category: e.target.value })}
-                  className="rounded-md p-2 text-black"
+                  className="rounded-md p-2 text-white"
                 >
                   <option value="">Category</option>
                   {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
@@ -162,7 +162,7 @@ const RegisterPage = () => {
                 <select
                   value={offeredSkill.level}
                   onChange={(e) => setOfferedSkill({ ...offeredSkill, level: e.target.value })}
-                  className="rounded-md p-2 text-black"
+                  className="rounded-md p-2 text-white"
                 >
                   <option value="">Level</option>
                   {levels.map((l, i) => <option key={i} value={l}>{l}</option>)}
@@ -190,7 +190,7 @@ const RegisterPage = () => {
                 <select
                   value={wantedSkill.category}
                   onChange={(e) => setWantedSkill({ ...wantedSkill, category: e.target.value })}
-                  className="rounded-md p-2 text-black"
+                  className="rounded-md p-2 text-white"
                 >
                   <option value="">Category</option>
                   {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
@@ -198,7 +198,7 @@ const RegisterPage = () => {
                 <select
                   value={wantedSkill.level}
                   onChange={(e) => setWantedSkill({ ...wantedSkill, level: e.target.value })}
-                  className="rounded-md p-2 text-black"
+                  className="rounded-md p-2 text-white"
                 >
                   <option value="">Level</option>
                   {levels.map((l, i) => <option key={i} value={l}>{l}</option>)}
