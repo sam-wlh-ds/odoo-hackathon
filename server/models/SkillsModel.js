@@ -7,5 +7,6 @@ const skillsSchema = new Schema({
   level: { type: String },
 });
 
-const SkillModel = mongoose.model('SkillModel', skillsSchema);
+const SkillModel = mongoose.model('Skill', skillsSchema);
+
 export default SkillModel;

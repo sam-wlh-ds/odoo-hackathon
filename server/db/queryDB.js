@@ -19,24 +19,15 @@ async function getUserWithSkills(username) {
     const user = await UserModel.findOne({ username })
       .populate('skillsOffered')
       .populate('skillsWanted')
-      .lean(); // optional: returns plain JS object
+      .lean();
 
-    if (!user) {
-      return { success: false, message: 'User not found' };
-    }
+    if (!user) return { success: false, message: 'User not found' };
 
     delete user.password;
-
-    return {
-      success: true,
-      user
-    };
+    return { success: true, user };
   } catch (error) {
     console.error('Fetch user error:', error);
-    return {
-      success: false,
-      message: 'Failed to fetch user data'
-    };
+    return { success: false, message: 'Failed to fetch user data' };
   }
 }
 
