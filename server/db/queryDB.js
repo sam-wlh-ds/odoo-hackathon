@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import UserModel from '../models/UserModel.js';
+import SkillModel from '../models/SkillsModel.js';
 
 async function getUserById(id) {
   try {
@@ -13,5 +14,22 @@ async function getUserById(id) {
   }
 }
 
+async function getUserWithSkills(username) {
+  try {
+    const user = await UserModel.findOne({ username })
+      .populate('skillsOffered')
+      .populate('skillsWanted')
+      .lean();
 
-export {getUserById};
+    if (!user) return { success: false, message: 'User not found' };
+
+    delete user.password;
+    return { success: true, user };
+  } catch (error) {
+    console.error('Fetch user error:', error);
+    return { success: false, message: 'Failed to fetch user data' };
+  }
+}
+
+
+export {getUserById, getUserWithSkills};

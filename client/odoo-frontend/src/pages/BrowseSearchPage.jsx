@@ -243,7 +243,7 @@ const BrowseSearchPage = () => {
           </div>
         </DialogContent>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+          <Button variant="default" onClick={() => setIsModalOpen(false)}>Cancel</Button>
           <Button onClick={handleSubmitSwapRequest}>Send Request</Button>
         </DialogFooter>
       </Dialog>

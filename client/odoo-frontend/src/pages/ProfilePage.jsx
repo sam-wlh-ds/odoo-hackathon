@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/AuthContext';
 import { mockApi } from '../api/mockApi';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -9,7 +8,7 @@ import { Label } from '../components/ui/Label';
 import { Checkbox } from '../components/ui/Checkbox';
 
 const ProfilePage = () => {
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser, setCurrentUser } = true;
   const navigate = useNavigate();
 
   const [name, setName] = useState(currentUser?.name || '');
@@ -24,11 +23,11 @@ const ProfilePage = () => {
 
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-  useEffect(() => {
-    if (!currentUser) {
-      navigate('/login');
-    }
-  }, [currentUser, navigate]);
+  // useEffect(() => {
+  //   if (!currentUser) {
+  //     navigate('/login');
+  //   }
+  // }, [currentUser, navigate]);
 
   const handleSave = async (e) => {
     e.preventDefault();

@@ -15,13 +15,11 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    console.log("Here");
     const result = await loginAndGetToken(username, password);
-    if (result === true) {
+    if (result.success) {
       navigate('/dashboard');
-    } else {                                                                        
+    } else {
       setError(result.message);
-      console.log("Error:", result.message);
     }
   };
 

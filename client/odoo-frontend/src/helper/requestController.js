@@ -12,18 +12,22 @@ async function loginAndGetToken(username, password) {
     });
 
     const data = await res.json();
+    console.log(res);
 
-    if (res.ok && data.token) {
-      localStorage.setItem("Authorization", data.token);
-      console.log("Token stored.");
-      return true;
-    } else {
-      console.error("Login failed:", data);
-      return data;
+    try {
+        if (res.ok && data.token) {
+            localStorage.setItem("Authorization", data.token);
+            console.log("Token stored.");
+            return {success: 1};
+        } else {
+            return {message: data.message};
+        }
+    } catch (error) {
+        return { message: (error.message || "Invalid Details")};
     }
   } catch (err) {
-    console.error("Login request error:", err);
-    return err;
+    console.error("Login request error:", err.message);
+    return {message: err.message};
   }
 }
 
@@ -65,7 +69,7 @@ async function sendRequest(json, path) {
         Authorization: `Bearer ${token}`,
       },
       credentials: "include",
-      body: json,
+    //   body: json,
     });
 
     const data = await res.json();

@@ -8,4 +8,5 @@ const skillsSchema = new Schema({
 });
 
 const SkillModel = mongoose.model('Skill', skillsSchema);
+
 export default SkillModel;
