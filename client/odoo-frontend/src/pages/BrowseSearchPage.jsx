@@ -93,46 +93,81 @@ const BrowseSearchPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Browse & Search Skills</h1>
+    <div className="w-full min-h-screen p-8 bg-[#14213d]">
+      <h1 className="text-3xl font-bold mb-6 text-[#fca311]">Browse & Search Skills</h1>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+      <div className="bg-[#14213d] p-6 rounded-lg shadow-md mb-8 border border-white">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
-            <Label htmlFor="searchSkill">Search by Skill</Label>
+            <Label htmlFor="searchSkill" className="text-white">Search by Skill</Label>
             <Input
               id="searchSkill"
               placeholder="e.g., Photoshop, Excel"
+              className="placeholder-white text-white"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor="searchLocation">Filter by Location (Optional)</Label>
+            <Label htmlFor="searchLocation" className="text-white">Filter by Location (Optional)</Label>
             <Input
               id="searchLocation"
               placeholder="e.g., London"
+              className="placeholder-white text-white"
               value={filterLocation}
               onChange={(e) => setFilterLocation(e.target.value)}
             />
           </div>
           <div>
-            <Label>Filter by Availability</Label>
+            <Label className="text-white">Filter by Availability</Label>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              {daysOfWeek.map(day => (
-                <Checkbox
-                  key={day}
-                  id={`avail-${day}`}
-                  checked={filterAvailability.includes(day)}
-                  onCheckedChange={() => handleAvailabilityChange(day)}
-                >
-                  {day.charAt(0).toUpperCase() + day.slice(1)}
-                </Checkbox>
-              ))}
-            </div>
+                  {daysOfWeek.map((day) => (
+                    <label
+                      key={day}
+                      htmlFor={`avail-${day}`}
+                      className="flex items-center gap-2 text-white cursor-pointer"
+                    >
+                      <input
+                        id={`avail-${day}`}
+                        type="checkbox"
+                        checked={filterAvailability.includes(day)}
+                        onChange={() => handleAvailabilityChange(day)}
+                        className="peer hidden"
+                      />
+                      <div className="h-5 w-5 flex items-center justify-center rounded-md border border-[#a2a1a833] bg-[#212121] peer-checked:bg-[#fca311] transition">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          className="w-4 h-4 stroke-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 12.6111L8.92308 17.5L20 6.5"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                    </label>
+                  ))}
+                </div>
+
           </div>
         </div>
-        <Button onClick={handleSearch} className="w-full">Search Users</Button>
+        <div className="flex space-x-4">
+          <Button onClick={handleSearch} className="">Search Users</Button>
+          <Button onClick={() => {
+            setSearchTerm('');
+            setFilterLocation('');
+            setFilterAvailability([]);
+          }}>
+            Reset
+          </Button>
+        </div>
+
+
       </div>
 
       {loading ? (

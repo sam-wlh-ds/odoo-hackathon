@@ -26,7 +26,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-slate-900 p-4">
       <Card className="w-full max-w-md bg-[#14213d] text-white">
         <CardHeader>
           <CardTitle >Login</CardTitle>
