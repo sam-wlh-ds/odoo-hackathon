@@ -13,8 +13,7 @@ import { Label } from '../components/ui/Label';
 import { sendRequest } from '../helper/requestController';
 
 const OtherUserProfilePage = () => {
-  const { userId } = useParams();
-
+  const { userId: username } = useParams(); // userId is actually the username
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,6 @@ const OtherUserProfilePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [offeredSkill, setOfferedSkill] = useState('');
   const [requestedSkill, setRequestedSkill] = useState('');
-  const [swapMessage, setSwapMessage] = useState('');
   const [swapError, setSwapError] = useState('');
 
   useEffect(() => {
@@ -31,7 +29,7 @@ const OtherUserProfilePage = () => {
         setLoading(true);
 
         const currentUserData = await sendRequest({}, 'user');
-        const otherUserData = await sendRequest({}, `user/${userId}`);
+        const otherUserData = await sendRequest({}, `user/${username}`);
 
         if (!otherUserData || !otherUserData.user) {
           setError('User not found');
@@ -54,7 +52,7 @@ const OtherUserProfilePage = () => {
     };
 
     fetchData();
-  }, [userId]);
+  }, [username]);
 
   const handleRequestSwap = () => {
     if (!currentUser) {
@@ -64,39 +62,27 @@ const OtherUserProfilePage = () => {
 
     setOfferedSkill(currentUser.skillsOffered?.[0]?.name || '');
     setRequestedSkill(user.skillsWanted?.[0]?.name || '');
-    setSwapMessage('');
     setSwapError('');
     setIsModalOpen(true);
   };
 
-  const handleSubmitSwapRequest = async () => {
+  const handleSubmitSwapRequest = () => {
     if (!offeredSkill || !requestedSkill) {
       setSwapError('Please select both an offered and a wanted skill.');
       return;
     }
+
     if (offeredSkill === requestedSkill) {
       setSwapError('Offered skill cannot be the same as requested skill.');
       return;
     }
 
-    try {
-      const res = await sendRequest({
-        fromUserId: currentUser._id,
-        toUserId: user._id,
-        offeredSkill,
-        requestedSkill
-      }, 'swap/request');
+    const subject = `Skill Swap Request: ${offeredSkill} for ${requestedSkill}`;
+    const body = `Hi ${user.name},%0D%0A%0D%0AI'd like to offer my skill in "${offeredSkill}" in exchange for your skill "${requestedSkill}".%0D%0A%0D%0ALet me know if you're interested.%0D%0A%0D%0AThanks,%0D%0A${currentUser.name}`;
+    const mailtoLink = `mailto:${user.email}?subject=${encodeURIComponent(subject)}&body=${body}`;
 
-      if (res?.success) {
-        setSwapMessage('Swap request sent successfully!');
-        setIsModalOpen(false);
-      } else {
-        setSwapError(res?.message || 'Failed to send request.');
-      }
-    } catch (err) {
-      console.error('Swap request error:', err);
-      setSwapError('Failed to send swap request.');
-    }
+    window.location.href = mailtoLink;
+    setIsModalOpen(false);
   };
 
   if (loading) return <p className="text-center p-4">Loading user profile...</p>;
@@ -110,7 +96,10 @@ const OtherUserProfilePage = () => {
           src={user.profilePhotoURL}
           alt={user.name}
           className="w-32 h-32 rounded-full object-cover mb-6 border-4 border-blue-500"
-          onError={(e) => e.target.src = `https://placehold.co/100x100/ADD8E6/000000?text=${user.name.charAt(0)}`}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = `https://placehold.co/100x100/ADD8E6/000000?text=${user.name.charAt(0)}`;
+          }}
         />
         <h1 className="text-4xl font-bold mb-2">{user.name}</h1>
         {user.location && <p className="text-lg text-white-600 mb-4">{user.location}</p>}
@@ -172,7 +161,6 @@ const OtherUserProfilePage = () => {
         </DialogHeader>
         <DialogContent>
           {swapError && <p className="text-red-500 text-sm">{swapError}</p>}
-          {swapMessage && <p className="text-green-600 text-sm">{swapMessage}</p>}
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="offeredSkill" className="text-right">Your Skill</Label>

@@ -3,7 +3,7 @@ import React from 'react';
 const Dialog = ({ children, open, onOpenChange }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 text-white">
       <div className="relative w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg">
         {children}
         <button
@@ -33,31 +33,31 @@ const Dialog = ({ children, open, onOpenChange }) => {
 };
 
 const DialogHeader = ({ children, className = '' }) => (
-  <div className={`flex flex-col space-y-1.5 text-center sm:text-left ${className}`}>
+  <div className={`flex flex-col space-y-1.5 text-center sm:text-left text-white ${className}`}>
     {children}
   </div>
 );
 
 const DialogTitle = ({ children, className = '' }) => (
-  <h3 className={`text-lg font-semibold leading-none tracking-tight ${className}`}>
+  <h3 className={`text-lg font-semibold leading-none tracking-tight text-white ${className}`}>
     {children}
   </h3>
 );
 
 const DialogDescription = ({ children, className = '' }) => (
-  <p className={`text-sm text-muted-foreground ${className}`}>
+  <p className={`text-sm text-muted-foreground text-white ${className}`}>
     {children}
   </p>
 );
 
 const DialogContent = ({ children, className = '' }) => (
-  <div className={`grid gap-4 py-4 ${className}`}>
+  <div className={`grid gap-4 py-4 text-white ${className}`}>
     {children}
   </div>
 );
 
 const DialogFooter = ({ children, className = '' }) => (
-  <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 ${className}`}>
+  <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 text-white ${className}`}>
     {children}
   </div>
 );

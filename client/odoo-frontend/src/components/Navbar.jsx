@@ -1,49 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { mockApi } from "../api/mockApi";
+import { sendRequest } from "../helper/requestController";
 import { Button } from "./ui/Button";
 
 const Navbar = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
 
+  const isLoggedIn = !!localStorage.getItem("Authorization");
+
+  // Fetch current user if token exists but currentUser isn't in localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      try {
-        setCurrentUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Failed to parse user from localStorage:", err);
-      }
-    }
-  }, []);
+    const init = async () => {
+      const storedUser = localStorage.getItem("currentUser");
 
-  const logout = () => {
+      if (storedUser) {
+        try {
+          setCurrentUser(JSON.parse(storedUser));
+        } catch (err) {
+          console.error("Failed to parse user from localStorage:", err);
+        }
+      } else if (isLoggedIn) {
+        try {
+          const res = await sendRequest({}, "user");
+          if (res?.user) {
+            setCurrentUser(res.user);
+            localStorage.setItem("currentUser", JSON.stringify(res.user));
+          }
+        } catch (err) {
+          console.error("Failed to fetch user from token:", err);
+        }
+      }
+    };
+    init();
+  }, [isLoggedIn]);
+
+  // Notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (currentUser && isLoggedIn) {
+        const notifs = await mockApi.getNotifications(currentUser._id);
+        setNotifications(notifs);
+      }
+    };
+
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 5000);
+    return () => clearInterval(interval);
+  }, [currentUser, isLoggedIn]);
+
+  const handleLogout = () => {
     localStorage.removeItem("Authorization");
     localStorage.removeItem("currentUser");
     setCurrentUser(null);
-  };
-
-  const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
-
-  useEffect(() => {
-    if (currentUser) {
-      const fetchNotifications = async () => {
-        const notifs = await mockApi.getNotifications(currentUser._id);
-        setNotifications(notifs);
-      };
-      fetchNotifications();
-      // Simulate real-time updates (in a real app, use WebSockets)
-      const interval = setInterval(fetchNotifications, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [currentUser]);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  const handleLogout = () => {
-    logout();
     navigate("/login");
   };
 
@@ -55,6 +67,8 @@ const Navbar = () => {
       )
     );
   };
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <nav className="bg-[#14213d] p-4 text-white shadow-md">
@@ -81,7 +95,7 @@ const Navbar = () => {
               Browse Skills
             </Link>
 
-            {currentUser ? (
+            {isLoggedIn && currentUser ? (
               <>
                 <Link to="/dashboard" className="hover:text-[#fca311]">
                   Dashboard
@@ -92,6 +106,7 @@ const Navbar = () => {
                 <Link to="/requests" className="hover:text-[#fca311]">
                   Swap Requests
                 </Link>
+
                 <div className="relative">
                   <Button
                     variant="ghost"
@@ -147,6 +162,7 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
                 <Button onClick={handleLogout} variant="destructive">
                   Logout
                 </Button>
