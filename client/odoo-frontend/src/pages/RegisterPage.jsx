@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/AuthContext';
+import axios from 'axios';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
@@ -12,7 +12,6 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -32,11 +31,27 @@ const RegisterPage = () => {
       return;
     }
 
-    const result = await register({ name, username, email, password });
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.message);
+    try {
+      const result = await axios.post('http://localhost:3000/register', {
+        name,
+        username,
+        email,
+        password,
+        location: '',
+        profilePhotoURL: '',
+        isPublic: true,
+        availability: [],
+        skillsOffered: [],
+        skillsWanted: []
+      });
+
+      if (result.data.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.data.message || 'Registration failed');
+      }
+    } catch (err) {
+      setError(err.response?.data?.errors?.[0]?.msg || 'Something went wrong');
     }
   };
 
