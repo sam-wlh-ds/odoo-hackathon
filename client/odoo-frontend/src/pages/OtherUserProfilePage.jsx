@@ -86,8 +86,8 @@ const OtherUserProfilePage = () => {
   if (!user) return <p className="text-center p-4">User data not available.</p>;
 
   return (
-    <div className="container mx-auto p-8">
-      <Card className="p-8 flex flex-col items-center">
+    <div className="w-full min-h-screen p-8 bg-[#14213d]">
+      <Card className="p-8 flex flex-col items-center border border-white text-white">
         <img
           src={user.profilePhotoURL}
           alt={user.name}
@@ -95,47 +95,52 @@ const OtherUserProfilePage = () => {
           onError={(e) => e.target.src = `https://placehold.co/100x100/ADD8E6/000000?text=${user.name.charAt(0)}`}
         />
         <h1 className="text-4xl font-bold mb-2">{user.name}</h1>
-        {user.location && <p className="text-lg text-gray-600 mb-4">{user.location}</p>}
+        {user.location && <p className="text-lg text-white-600 mb-4">{user.location}</p>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
           <div>
             <h2 className="text-2xl font-semibold mb-3">Skills Offered</h2>
             <div className="flex flex-wrap gap-2">
               {user.skillsOffered.length > 0 ? (
                 user.skillsOffered.map(skill => (
-                  <span key={skill._id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg">{skill.name}</span>
+                  <span key={skill._id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg">
+                    {skill.name}
+                  </span>
                 ))
               ) : (
                 <p className="text-gray-500">No skills offered yet.</p>
               )}
             </div>
           </div>
+
           <div>
             <h2 className="text-2xl font-semibold mb-3">Skills Wanted</h2>
             <div className="flex flex-wrap gap-2">
               {user.skillsWanted.length > 0 ? (
                 user.skillsWanted.map(skill => (
-                  <span key={skill._id} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-lg">{skill.name}</span>
+                  <span key={skill._id} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-lg">
+                    {skill.name}
+                  </span>
                 ))
               ) : (
                 <p className="text-gray-500">No skills wanted yet.</p>
               )}
             </div>
           </div>
-        </div>
 
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-3">Availability</h2>
-          <div className="flex flex-wrap gap-2">
-            {user.availability.length > 0 ? (
-              user.availability.map(day => (
-                <span key={day} className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">
-                  {day.charAt(0).toUpperCase() + day.slice(1)}
-                </span>
-              ))
-            ) : (
-              <p className="text-gray-500">Availability not specified.</p>
-            )}
+          <div>
+            <h2 className="text-2xl font-semibold mb-3">Availability</h2>
+            <div className="flex flex-wrap gap-2">
+              {user.availability.length > 0 ? (
+                user.availability.map(day => (
+                  <span key={day} className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </span>
+                ))
+              ) : (
+                <p className="text-gray-500">Availability not specified.</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -207,7 +212,7 @@ const OtherUserProfilePage = () => {
           </div>
         </DialogContent>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+          <Button variant="default" onClick={() => setIsModalOpen(false)}>Cancel</Button>
           <Button onClick={handleSubmitSwapRequest}>Send Request</Button>
         </DialogFooter>
       </Dialog>

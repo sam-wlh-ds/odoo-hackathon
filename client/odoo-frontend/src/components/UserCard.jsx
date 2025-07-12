@@ -11,7 +11,7 @@ const UserCard = ({ user, currentUser, onSwapRequest }) => {
   };
 
   return (
-    <Card className="p-6 flex flex-col items-center text-center shadow-md hover:shadow-lg transition-shadow duration-200">
+    <Card className="p-6 flex flex-col items-center text-center text-white shadow-md hover:shadow-lg transition-shadow duration-200">
       <img
         src={user.profilePhotoURL}
         alt={user.name}
@@ -35,7 +35,7 @@ const UserCard = ({ user, currentUser, onSwapRequest }) => {
         </div>
       </div>
       <div className="flex space-x-2">
-        <Button onClick={handleViewProfile} variant="outline">View Profile</Button>
+        <Button onClick={handleViewProfile} variant="default">View Profile</Button>
         {currentUser && currentUser._id !== user._id && (
           <Button onClick={() => onSwapRequest(user)}>Request Swap</Button>
         )}
