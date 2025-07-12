@@ -158,21 +158,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
       </div>
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Quick Links</h2>
-        <div className="flex flex-col gap-2">
-          <Link to="/browse" className="text-blue-600 hover:underline">
-            Browse Users
-          </Link>
-          <Link to="/requests" className="text-blue-600 hover:underline">
-            View Swap Requests
-          </Link>
-          <Link to="/feedback" className="text-blue-600 hover:underline">
-            Give/View Feedback
-          </Link>
-        </div>
-      </div>
+            
     </div>
   );
 };

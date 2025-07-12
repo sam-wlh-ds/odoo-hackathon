@@ -12,6 +12,7 @@ import OtherUserProfilePage from './pages/OtherUserProfilePage';
 import BrowseSearchPage from './pages/BrowseSearchPage';
 import SwapRequestsPage from './pages/SwapRequestsPage';
 import FeedbackPage from './pages/FeedbackPage';
+import { Footer } from './components/Footer';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
               <Route path="/feedback/:swapId" element={<FeedbackPage />} />
             </Routes>
           </main>
+          <Footer/>
         </div>
       </AuthProvider>
     </Router>

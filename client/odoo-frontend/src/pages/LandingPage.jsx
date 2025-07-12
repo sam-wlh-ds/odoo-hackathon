@@ -53,7 +53,6 @@ const Index = () => {
       <Hero />
       <FeaturedSkills />
       <HowItWorks />
-      <Footer />
     </div>
   );
 };

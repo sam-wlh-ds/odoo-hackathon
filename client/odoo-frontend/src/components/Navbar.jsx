@@ -103,9 +103,9 @@ const Navbar = () => {
                 <Link to="/profile" className="hover:text-[#fca311]">
                   Profile
                 </Link>
-                <Link to="/requests" className="hover:text-[#fca311]">
+                {/* <Link to="/requests" className="hover:text-[#fca311]">
                   Swap Requests
-                </Link>
+                </Link> */}
 
                 <div className="relative">
                   <Button
