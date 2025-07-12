@@ -69,7 +69,7 @@ async function sendRequest(json, path) {
         Authorization: `Bearer ${token}`,
       },
       credentials: "include",
-      body: json,
+    //   body: json,
     });
 
     const data = await res.json();
