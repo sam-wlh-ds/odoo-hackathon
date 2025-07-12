@@ -11,5 +11,6 @@ const feedbackSchema = new Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const FeedbackModel = mongoose.model('Skill', feedbackSchema);
+const FeedbackModel = mongoose.model('Feedback', feedbackSchema);
+
 export default FeedbackModel;
