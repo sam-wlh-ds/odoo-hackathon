@@ -20,6 +20,7 @@ const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sat
 const RegisterPage = () => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,11 +33,9 @@ const RegisterPage = () => {
   const [skillsWanted, setSkillsWanted] = useState([]);
 
   const toggleDay = (day) => {
-    if (availability.includes(day)) {
-      setAvailability(availability.filter(d => d !== day));
-    } else {
-      setAvailability([...availability, day]);
-    }
+    setAvailability((prev) =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    );
   };
 
   const addOfferedSkill = () => {
@@ -78,7 +77,7 @@ const RegisterPage = () => {
         username,
         email,
         password,
-        location: '',
+        location,
         profilePhotoURL: '',
         isPublic: true,
         availability,
@@ -87,7 +86,7 @@ const RegisterPage = () => {
       });
 
       if (result.data.success) {
-        navigate('/login');
+        navigate('/dashboard');
       } else {
         setError(result.data.message || 'Registration failed');
       }
@@ -120,6 +119,10 @@ const RegisterPage = () => {
             <div>
               <Label>Password</Label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <div>
+              <Label>Location</Label>
+              <Input value={location} onChange={(e) => setLocation(e.target.value)} />
             </div>
 
             {/* Availability Days */}
