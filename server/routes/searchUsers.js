@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { searchUsers } from "../db/queryDB.js"; // make sure searchUsers is exported
+import { searchUsers } from "../db/queryDB.js"; 
 
 const searchUsersRouter = Router();
 
-// Example: /api/search-users?skill=Guitar&location=Delhi&availability=Monday&availability=Friday
+// Format: /api/search-users?skill=Guitar&location=Delhi&availability=Monday&availability=Friday
 searchUsersRouter.get('/', async (req, res, next) => {
   try {
     const { skill, location, availability } = req.query;
